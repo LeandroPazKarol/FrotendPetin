@@ -1,0 +1,21 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer base {
+  body {
+
+    @apply bg-[#FAF8FC] text-gray-800 font-sans m-0 p-0;
+  }
+}
+
+@layer utilities {
+
+  .bg-gradient-brand {
+    @apply bg-gradient-to-r from-brand-purple to-brand-pink text-white transition-all duration-300;
+  }
+  
+  .shadow-soft {
+    @apply shadow-[0_4px_20px_rgba(0,0,0,0.05)];
+  }
+}

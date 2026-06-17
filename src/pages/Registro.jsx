@@ -1,0 +1,94 @@
+import { useState } from 'react';
+import { Link } from 'react-router-dom';
+import axios from 'axios';
+import InputBox from '../components/InputBox';
+import Button from '../components/Button';
+
+const Registro = () => {
+  
+  // guarda los datos que el usuario va escribiendo en tiempo real
+   const [formData, setFormData] = useState({
+    name: '',
+    email: '',
+    password: '',
+    confirmPassword: ''
+  });
+  const [error, setError] = useState('');
+
+  const handleChange = (e) => {
+    setFormData({ ...formData, [e.target.name]: e.target.value });
+  };
+
+  const handleSubmit = async (e) => {
+    e.preventDefault();
+    try {
+      // nuevo usuario en la bd
+      const response = await axios.post('http://localhost:3005/api/auth/register', formData);
+      
+      // guardamos en sessionStorage para mantener la sesión
+      sessionStorage.setItem('token', response.data.token);
+      
+      //redirigimos a la pantalla de "Perfil" para que el usuario registre a su mascota
+    
+      window.location.href = '/perfil';
+    } catch (err) {
+      setError(err.response?.data?.error || 'Error al registrarse');
+    }
+  };
+
+  return (
+    <div className="flex h-[80vh] bg-white rounded-3xl overflow-hidden shadow-soft max-w-5xl mx-auto">
+      <div className="hidden md:flex w-1/2 relative bg-gray-200">
+        <img 
+          src="https://images.unsplash.com/photo-1543466835-00a7907e9de1?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&q=80" 
+          alt="Perro feliz" 
+          className="w-full h-full object-cover"
+        />
+        <div className="absolute bottom-8 left-8 right-8 bg-white/20 backdrop-blur-md p-4 rounded-2xl text-white font-medium border border-white/30">
+          "Encontrar amigos para tu mascota nunca fue tan fácil"
+        </div>
+      </div>
+
+      <div className="w-full md:w-1/2 p-8 md:p-12 flex flex-col justify-center">
+        <div className="flex items-center gap-2 mb-6">
+           <div className="w-8 h-8 rounded bg-gradient-brand flex items-center justify-center text-white font-bold">🐾</div>
+           <span className="text-xl font-bold text-brand-purple">Pettin</span>
+        </div>
+
+        <h1 className="text-3xl font-bold text-gray-800 mb-2">Crear cuenta</h1>
+        <p className="text-gray-500 text-sm mb-8">Únete a nuestra comunidad y encuentra amigos para tu mascota</p>
+
+     
+        <div className="flex flex-col gap-3 mb-6">
+          <Button variant="outline" text="Registrarse con Google" />
+          <Button variant="black" text="Registrarse con Apple" />
+        </div>
+
+        <div className="flex items-center gap-4 mb-6">
+          <div className="h-px bg-gray-200 flex-1"></div>
+          <span className="text-xs text-gray-400">o regístrate con correo</span>
+          <div className="h-px bg-gray-200 flex-1"></div>
+        </div>
+
+        {error && <div className="bg-red-100 text-red-600 p-3 rounded mb-4 text-sm">{error}</div>}
+
+        <form onSubmit={handleSubmit} className="flex flex-col gap-2">
+          <InputBox name="name" placeholder="Nombre completo" onChange={handleChange} />
+          <InputBox name="email" type="email" placeholder="Correo electrónico" onChange={handleChange} />
+          <InputBox name="password" type="password" placeholder="Contraseña (mín. 6 caracteres)" onChange={handleChange} />
+          <InputBox name="confirmPassword" type="password" placeholder="Confirmar contraseña" onChange={handleChange} />
+
+          <div className="mt-4">
+            <Button type="submit" variant="primary" text="Crear cuenta" fullWidth />
+          </div>
+        </form>
+
+        <p className="text-center text-sm text-gray-500 mt-6">
+          ¿Ya tienes cuenta? <Link to="/login" className="text-brand-purple font-semibold">Inicia sesión</Link>
+        </p>
+      </div>
+    </div>
+  );
+};
+
+export default Registro;
