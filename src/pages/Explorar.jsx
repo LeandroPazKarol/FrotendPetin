@@ -1,4 +1,4 @@
-import { useState, useEffect } from "react";
+import { useState, useEffect, useMemo } from "react";
 import axios from "axios";
 import PetCard from "../components/PetCard";
 import { AnimatePresence, motion } from "framer-motion";
@@ -23,6 +23,9 @@ const Explorar = () => {
   const [loading, setLoading] = useState(true);
   const [message, setMessage] = useState("");
   const [matchPopup, setMatchPopup] = useState(null);
+
+  const [searchTerm, setSearchTerm] = useState("");
+  const [speciesFilter, setSpeciesFilter] = useState("all");
 
   useEffect(() => {
     const fetchData = async () => {
@@ -106,6 +109,21 @@ const Explorar = () => {
     }
   };
 
+  const filteredPets = useMemo(() => {
+      return pets.filter((pet) => {
+        const matchesSearch = pet.name
+          .toLowerCase()
+          .includes(searchTerm.toLowerCase());
+        const matchesSpecies = speciesFilter === "all" || pet.species === speciesFilter;
+        return matchesSearch && matchesSpecies;
+      });
+    }, [pets, searchTerm, speciesFilter]);
+  
+    const speciesOptions = useMemo(() => {
+      const options = new Set(pets.map((pet) => pet.species).filter(Boolean));
+      return ["all", ...Array.from(options)];
+    }, [pets]);
+
   if (loading)
     return (
       <div className="text-center mt-20 text-brand-purple font-bold text-xl animate-pulse">
@@ -146,13 +164,21 @@ const Explorar = () => {
         <div className="flex flex-col sm:flex-row justify-center items-center gap-4 mt-6">
           <input
             type="text"
+            value={searchTerm}
+            onChange={(e) => setSearchTerm(e.target.value)}
             placeholder="Buscar por nombre"
             className="px-4 py-2 border border-gray-200 rounded-full w-full sm:w-64 shadow-sm outline-none focus:border-brand-purple transition-all"
           />
-          <select className="px-4 py-2 border border-gray-200 rounded-full shadow-sm outline-none bg-white focus:border-brand-purple transition-all cursor-pointer">
-            <option>Todas</option>
-            <option>Perros</option>
-            <option>Gatos</option>
+          <select
+            value={speciesFilter}
+            onChange={(e) => setSpeciesFilter(e.target.value)}
+            className="px-4 py-2 border border-gray-200 rounded-full shadow-sm outline-none bg-white focus:border-brand-purple transition-all cursor-pointer"
+          >
+            {speciesOptions.map((option) => (
+              <option key={option} value={option}>
+                {option === "all" ? "Todas" : option}
+              </option>
+            ))}
           </select>
         </div>
         <div className="h-6 mt-4">
@@ -166,12 +192,12 @@ const Explorar = () => {
 
       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-8 place-items-center">
         <AnimatePresence>
-          {pets.length === 0 ? (
+          {filteredPets.length === 0 ? (
             <p className="text-gray-500 col-span-1 sm:col-span-2 lg:col-span-3 text-center">
               No hay más mascotas cerca por ahora. ¡Vuelve pronto!
             </p>
           ) : (
-            pets.map((pet) => (
+            filteredPets.map((pet) => (
               <PetCard
                 key={pet._id}
                 pet={pet}

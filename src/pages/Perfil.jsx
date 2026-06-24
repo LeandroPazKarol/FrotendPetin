@@ -86,8 +86,8 @@ const Perfil = () => {
 
       <div className="flex flex-col md:flex-row gap-8 items-start">
         {/* Tarjeta Izquierda (Degradado y Foto) */}
-        <div className="w-full md:w-1/3 bg-white rounded-3xl p-6 shadow-soft flex flex-col items-center">
-          <div className="w-full h-48 bg-gradient-brand rounded-2xl mb-6 relative flex justify-center items-center overflow-hidden shadow-inner">
+        <div className="w-full max-w-sm mx-auto md:max-w-none md:w-1/3 md:mx-0 bg-white rounded-3xl p-6 shadow-soft flex flex-col items-center">
+          <div className="w-60 h-48 md:w-40 md:h-50 bg-gradient-brand rounded-2xl mb-6 relative flex justify-center items-center overflow-hidden shadow-inner">
              {existingPhoto ? (
                <img src={existingPhoto} alt="Mascota" className="w-full h-full object-cover" />
              ) : (

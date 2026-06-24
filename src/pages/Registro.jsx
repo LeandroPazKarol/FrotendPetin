@@ -1,5 +1,9 @@
 import { useState } from 'react';
 import { Link } from 'react-router-dom';
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+import { faApple } from "@fortawesome/free-brands-svg-icons";
+import { faGoogle } from "@fortawesome/free-brands-svg-icons";
+import { faEye, faEyeSlash } from "@fortawesome/free-solid-svg-icons"
 import axios from 'axios';
 import InputBox from '../components/InputBox';
 import Button from '../components/Button';
@@ -7,13 +11,15 @@ import Button from '../components/Button';
 const Registro = () => {
   
   // guarda los datos que el usuario va escribiendo en tiempo real
-   const [formData, setFormData] = useState({
+  const [formData, setFormData] = useState({
     name: '',
     email: '',
     password: '',
     confirmPassword: ''
   });
   const [error, setError] = useState('');
+  const [showPassword, setShowPassword] = useState(false);
+  const [showConfirmPassword, setShowConfirmPassword] = useState(false);
 
   const handleChange = (e) => {
     setFormData({ ...formData, [e.target.name]: e.target.value });
@@ -36,6 +42,14 @@ const Registro = () => {
     }
   };
 
+  const toggleVisibility = (field) => {
+    if(field === 'password') {
+      setShowPassword(!showPassword);
+    } else if (field === 'confirmPassword') {
+      setShowConfirmPassword(!showConfirmPassword);
+    }
+  }
+
   return (
     <div className="flex h-[80vh] bg-white rounded-3xl overflow-hidden shadow-soft max-w-5xl mx-auto">
       <div className="hidden md:flex w-1/2 relative bg-gray-200">
@@ -44,27 +58,29 @@ const Registro = () => {
           alt="Perro feliz" 
           className="w-full h-full object-cover"
         />
-        <div className="absolute bottom-8 left-8 right-8 bg-white/20 backdrop-blur-md p-4 rounded-2xl text-white font-medium border border-white/30">
+        <div className="absolute bottom-8 left-8 right-8 text-lg bg-white/20 backdrop-blur-md p-4 rounded-2xl text-white font-medium border border-white/30">
           "Encontrar amigos para tu mascota nunca fue tan fácil"
         </div>
       </div>
 
-      <div className="w-full md:w-1/2 p-8 md:p-12 flex flex-col justify-center">
-        <div className="flex items-center gap-2 mb-6">
-           <div className="w-8 h-8 rounded bg-gradient-brand flex items-center justify-center text-white font-bold">🐾</div>
-           <span className="text-xl font-bold text-brand-purple">Pettin</span>
+      <div className="w-full md:w-2/3 p-8 md:p-12 flex flex-col justify-center">
+        <div className="flex justify-center md:justify-start items-center gap-2 mb-4 mt-5">
+          <div className="w-10 h-10 rounded bg-gradient-brand flex items-center justify-center text-white font-bold">
+            <span className="[text-shadow:0_0_4px_#fff] text-2xl">🐾</span>
+          </div>
+          <span className="text-2xl font-bold text-brand-purple">Pettin</span>
         </div>
 
-        <h1 className="text-3xl font-bold text-gray-800 mb-2">Crear cuenta</h1>
-        <p className="text-gray-500 text-sm mb-8">Únete a nuestra comunidad y encuentra amigos para tu mascota</p>
+        <h1 className="text-4xl hover:3xl font-bold text-gray-800 mb-2 text-center hover:text-left">Crear cuenta</h1>
+        <p className="text-gray-500 text-md hover:text-sm mb-4 text-center hover:text-left">Únete a nuestra comunidad y encuentra amigos para tu mascota</p>
 
      
-        <div className="flex flex-col gap-3 mb-6">
-          <Button variant="outline" text="Registrarse con Google" />
-          <Button variant="black" text="Registrarse con Apple" />
+        <div className="flex flex-col gap-3 mb-4">
+          <Button variant="outline" icon={faGoogle} text="Registrarse con Google" />
+          <Button variant="black" icon={faApple} text="Registrarse con Apple" />
         </div>
 
-        <div className="flex items-center gap-4 mb-6">
+        <div className="flex items-center gap-4 mb-4">
           <div className="h-px bg-gray-200 flex-1"></div>
           <span className="text-xs text-gray-400">o regístrate con correo</span>
           <div className="h-px bg-gray-200 flex-1"></div>
@@ -72,18 +88,48 @@ const Registro = () => {
 
         {error && <div className="bg-red-100 text-red-600 p-3 rounded mb-4 text-sm">{error}</div>}
 
-        <form onSubmit={handleSubmit} className="flex flex-col gap-2">
+        <form onSubmit={handleSubmit} className="flex flex-col gap-1">
           <InputBox name="name" placeholder="Nombre completo" onChange={handleChange} />
           <InputBox name="email" type="email" placeholder="Correo electrónico" onChange={handleChange} />
-          <InputBox name="password" type="password" placeholder="Contraseña (mín. 6 caracteres)" onChange={handleChange} />
-          <InputBox name="confirmPassword" type="password" placeholder="Confirmar contraseña" onChange={handleChange} />
+          <div className="relative w-full">
+            <InputBox
+              name="password"
+              type={showPassword ? 'text' : 'password'}
+              placeholder="Contraseña (mín. 6 caracteres)"
+              onChange={handleChange}
+            />
+            <button
+              type="button"
+              onClick={() => toggleVisibility('password')}
+              className="absolute right-5 top-1/2 -translate-y-3/4 flex items-center"
+              aria-label={showPassword ? "Ocultar contraseña" : "Mostrar contraseña"}
+            >
+              <FontAwesomeIcon icon={showPassword ? faEyeSlash : faEye} className="h-5 w-5"/>
+            </button>
+          </div>
+          <div className="relative w-full">
+            <InputBox
+              name="confirmPassword"
+              type={showConfirmPassword ? 'text' : 'password'}
+              placeholder="Confirmar contraseña"
+              onChange={handleChange}
+            />
+            <button
+              type="button"
+              onClick={() => toggleVisibility('confirmPassword')}
+              className="absolute right-5 top-1/2 -translate-y-3/4 flex items-center"
+              aria-label={showConfirmPassword ? "Ocultar confirmar contraseña" : "Mostrar confirmar contraseña"}
+            >
+              <FontAwesomeIcon icon={showConfirmPassword ? faEyeSlash : faEye} className="h-5 w-5"/>
+            </button>
+          </div>
 
-          <div className="mt-4">
+          <div className="mt-1">
             <Button type="submit" variant="primary" text="Crear cuenta" fullWidth />
           </div>
         </form>
 
-        <p className="text-center text-sm text-gray-500 mt-6">
+        <p className="text-center text-sm text-gray-500 mt-2">
           ¿Ya tienes cuenta? <Link to="/login" className="text-brand-purple font-semibold">Inicia sesión</Link>
         </p>
       </div>

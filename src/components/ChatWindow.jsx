@@ -1,4 +1,6 @@
 import { useState, useEffect, useRef } from 'react';
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+import { faPaperPlane, faCircleLeft } from "@fortawesome/free-solid-svg-icons";
 import axios from 'axios';
 import { io } from 'socket.io-client';
 
@@ -68,7 +70,12 @@ const ChatWindow = ({ match, myPetId, onClose }) => {
         
         {/* Cabecera del Chat */}
         <div className="bg-gradient-brand p-4 flex items-center gap-4 text-white">
-          <button onClick={onClose} className="text-2xl hover:opacity-80 transition-opacity">⬅️</button>
+          <button onClick={onClose} className="text-2xl hover:opacity-80 transition-opacity">
+            <FontAwesomeIcon
+              icon={faCircleLeft}
+              className="cursor-pointer hover:opacity-90"
+            />
+          </button>
           <img 
             src={match.toPet.photos?.[0] || 'https://images.unsplash.com/photo-1543466835-00a7907e9de1?auto=format&fit=crop&w=150&q=80'} 
             alt={match.toPet.name} 
@@ -114,7 +121,10 @@ const ChatWindow = ({ match, myPetId, onClose }) => {
             className="flex-1 px-4 py-3 bg-gray-100 text-gray-700 rounded-full outline-none focus:ring-2 focus:ring-brand-purple transition-all"
           />
           <button type="submit" className="w-12 h-12 bg-gradient-brand text-white rounded-full flex items-center justify-center text-xl hover:opacity-90 shadow-md transform hover:scale-105 transition-all focus:outline-none">
-            ✈️
+            <FontAwesomeIcon
+              icon={faPaperPlane}
+              className="cursor-pointer hover:opacity-90"
+            />
           </button>
         </form>
 
