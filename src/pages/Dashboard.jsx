@@ -1,72 +1,67 @@
-import React, { useEffect, useMemo, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faPaw, faUsers, faChartLine, faShieldHalved, faMagnifyingGlass } from "@fortawesome/free-solid-svg-icons";
+import axios from 'axios'; 
 
 const Dashboard = () => {
     const [pets, setPets] = useState([]);
     const [loadingPets, setLoadingPets] = useState(true);
-    const [publicImages, setPublicImages] = useState([]);
+    const publicImages = useMemo(() => {
+        return pets.map(pet => pet.photo).filter(photo => photo != null);
+    }, [pets]);
     const [searchTerm, setSearchTerm] = useState("");
     const [speciesFilter, setSpeciesFilter] = useState("all");
     const [isOpen, setIsOpen] = useState(false);
 
+ 
+    const [stats, setStats] = useState({ users: 0, pets: 0, matches: 0, status: "CARGANDO" });
+    const [recentMatches, setRecentMatches] = useState([]);
+
     useEffect(() => {
-        const loadData = async () => {
+        const token = sessionStorage.getItem('token');
+        const headers = { Authorization: `Bearer ${token}` };
+
+        //Cargar las mascotas y usuarios 
+        const loadRealPets = async () => {
             try {
                 setLoadingPets(true);
-                const petsData = await loadPets();
-                const savedPet = JSON.parse(localStorage.getItem("pettin_pet"));
-                const normalizedSavedPet = savedPet
-                    ? {
-                        id: "local-1",
-                        name: savedPet.petName,
-                        age: Number(savedPet.petAge || 0),
-                        distance: "Local",
-                        match: "-",
-                        image: "https://images.unsplash.com/photo-1517849845537-4d257902454a",
-                        description: savedPet.petBio || "",
-                        species: savedPet.petType || "",
-                        breed: savedPet.petBreed || "",
-                        owner: "Registro local",
-                    }
-                    : null;
-
-                const mergedPets = normalizedSavedPet
-                    ? [normalizedSavedPet, ...petsData]
-                    : petsData;
-
-                setPets(mergedPets);
+                const res = await axios.get('http://localhost:3005/api/admin/pets', { headers });
+                setPets(res.data);
             } catch (error) {
-                console.error("Error loading pets:", error);
-                setPets([]);
+                console.error("Error cargando mascotas:", error);
             } finally {
                 setLoadingPets(false);
             }
         };
 
-        const loadPublicImages = async () => {
+        // carga de datos
+        const loadStats = async () => {
             try {
-                const images = await fetchPublicPets(6);
-                setPublicImages(images);
+                const res = await axios.get('http://localhost:3005/api/admin/stats', { headers });
+                setStats(res.data);
             } catch (error) {
-                console.error("Error loading public images:", error);
-                setPublicImages([]);
+                console.error("Error cargando estadísticas:", error);
             }
         };
 
-        loadData();
-        loadPublicImages();
+        // carga de matches
+        const loadMatches = async () => {
+            try {
+                const res = await axios.get('http://localhost:3005/api/admin/matches', { headers });
+                setRecentMatches(res.data);
+            } catch (error) {
+                console.error("Error cargando matches:", error);
+            }
+        };
+
+        loadRealPets();
+        loadStats();
+        loadMatches();
     }, []);
 
-    const matches = useMemo(() => {
-        const stored = JSON.parse(localStorage.getItem("pettin_matches")) || [];
-        return stored;
-    }, []);
 
-    const usersCount = useMemo(() => {
-        const storedUser = JSON.parse(localStorage.getItem("pettin_user"));
-        return storedUser ? 1 : 0;
-    }, []);
+
+
 
     const filteredPets = useMemo(() => {
         return pets.filter((pet) => {
@@ -136,7 +131,7 @@ const Dashboard = () => {
                                 <div className="flex items-center justify-between">
                                     <div>
                                         <p className="text-sm text-gray-500">Mascotas registradas</p>
-                                        <h3 className="text-3xl font-bold text-gray-900 mt-2">{pets.length}</h3>
+                                        <h3 className="text-3xl font-bold text-gray-900 mt-2">{stats.pets}</h3>
                                     </div>
                                     <div className="bg-purple-100 p-3 rounded-2xl text-purple-600 flex items-center justify-center">
                                         <FontAwesomeIcon icon={faPaw} className="w-7 h-7" />
@@ -148,7 +143,7 @@ const Dashboard = () => {
                                 <div className="flex items-center justify-between">
                                     <div>
                                         <p className="text-sm text-gray-500">Usuarios activos</p>
-                                        <h3 className="text-3xl font-bold text-gray-900 mt-2">{usersCount}</h3>
+                                        <h3 className="text-3xl font-bold text-gray-900 mt-2">{stats.users}</h3>
                                     </div>
                                     <div className="bg-pink-100 p-3 rounded-2xl text-pink-600 flex items-center justify-center">
                                         <FontAwesomeIcon icon={faUsers} className="w-7 h-7" />
@@ -160,7 +155,7 @@ const Dashboard = () => {
                                 <div className="flex items-center justify-between">
                                     <div>
                                         <p className="text-sm text-gray-500">Matches guardados</p>
-                                        <h3 className="text-3xl font-bold text-gray-900 mt-2">{matches.length}</h3>
+                                        <h3 className="text-3xl font-bold text-gray-900 mt-2">{stats.matches}</h3>
                                     </div>
                                     <div className="bg-indigo-100 p-3 rounded-2xl text-indigo-600 flex items-center justify-center">
                                         <FontAwesomeIcon icon={faChartLine} className="w-7 h-7" />
@@ -172,7 +167,7 @@ const Dashboard = () => {
                                 <div className="flex items-center justify-between">
                                     <div>
                                         <p className="text-sm text-gray-500">Estado del sistema</p>
-                                        <h3 className="text-3xl font-bold text-gray-900 mt-2">GENIAL</h3>
+                                        <h3 className="text-3xl font-bold text-gray-900 mt-2">{stats.status}</h3>
                                     </div>
                                     <div className="bg-green-100 p-3 rounded-2xl text-green-600 flex items-center justify-center">
                                         <FontAwesomeIcon icon={faShieldHalved} className="w-7 h-7" />
@@ -247,14 +242,14 @@ const Dashboard = () => {
                         <section id="matches" className="bg-white rounded-3xl shadow-xl p-8">
                             <h2 className="text-2xl font-bold text-gray-900 mb-4">Matches recientes</h2>
                             <div className="space-y-4">
-                                {matches.length === 0 ? (
+                                {recentMatches.length === 0 ? (
                                     <p className="text-gray-500">No hay matches registrados.</p>
                                 ) : (
-                                    matches.slice(0, 5).map((match, index) => (
-                                        <div key={`${match.petId}-${index}`} className="flex items-center justify-between bg-slate-50 px-4 py-3 rounded-2xl">
+                                    recentMatches.map((match) => (
+                                        <div key={match.id} className="flex items-center justify-between bg-slate-50 px-4 py-3 rounded-2xl">
                                             <div>
                                                 <p className="font-semibold text-gray-800">{match.petName}</p>
-                                                <p className="text-sm text-gray-500">Accion: {match.action}</p>
+                                                <p className="text-sm text-gray-500">Acción: {match.action}</p>
                                             </div>
                                             <span className="text-xs text-gray-400">{new Date(match.timestamp).toLocaleString()}</span>
                                         </div>
@@ -266,17 +261,17 @@ const Dashboard = () => {
                         <section id="public" className="bg-white rounded-3xl shadow-xl p-8">
                             <div className="flex items-center justify-between mb-6">
                                 <div>
-                                    <h2 className="text-2xl font-bold text-gray-900">Galeria API publica</h2>
-                                    <p className="text-gray-600">Imagenes obtenidas desde Dog CEO API.</p>
+                                    <h2 className="text-2xl font-bold text-gray-900">Galería de Mascotas</h2>
+                                    <p className="text-gray-600">Fotos subidas recientemente por nuestra comunidad.</p>
                                 </div>
                             </div>
                             {publicImages.length === 0 ? (
-                                <p className="text-gray-500">No se pudieron cargar imagenes.</p>
+                                <p className="text-gray-500">Todavía no hay fotos de mascotas subidas.</p>
                             ) : (
                                 <div className="grid grid-cols-2 md:grid-cols-3 gap-4">
-                                    {publicImages.map((image) => (
-                                        <div key={image} className="rounded-2xl overflow-hidden shadow-md">
-                                            <img src={image} alt="Mascota" className="w-full h-40 object-cover" />
+                                    {publicImages.map((image, idx) => (
+                                        <div key={idx} className="rounded-2xl overflow-hidden shadow-md h-40">
+                                            <img src={image} alt={`Mascota ${idx}`} className="w-full h-full object-cover" />
                                         </div>
                                     ))}
                                 </div>

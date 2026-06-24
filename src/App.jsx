@@ -1,4 +1,4 @@
-import { Routes, Route, Navigate } from 'react-router-dom';
+import { Routes, Route } from 'react-router-dom';
 import Navbar from './components/Navbar';
 import Registro from './pages/Registro';
 import Login from './pages/Login';
@@ -6,10 +6,11 @@ import Explorar from './pages/Explorar';
 import Perfil from './pages/Perfil';
 import Matches from './pages/Matches';
 import Dashboard from './pages/Dashboard';
+import NotFound from './pages/NotFound';
+import ProtectedRoute from './components/ProtectedRoute'; 
 
 function App() {
-  // Verificamos si el usuario ya inició sesión revisando si existe un token en su pestaña actual (sessionStorage)
-
+  // Verificamos si el usuario ya inició sesión para renderizar el Navbar
   const isAuthenticated = !!sessionStorage.getItem('token');
 
   return (
@@ -18,28 +19,25 @@ function App() {
 
       <main className="container mx-auto px-4 py-8">
         <Routes>
-          {/* <Route path="/dashboard" element={<Dashboard />} /> */}
           {/* Rutas Públicas */}
           <Route path="/registro" element={<Registro />} />
           <Route path="/login" element={<Login />} />
 
-          {/* Rutas Privadas*/}
-          <Route 
-            path="/explorar" 
-            element={isAuthenticated ? <Explorar /> : <Navigate to="/login" />} 
-          />
-          <Route 
-            path="/matches" 
-            element={isAuthenticated ? <Matches /> : <Navigate to="/login" />} 
-          />
-          <Route 
-            path="/perfil" 
-            element={isAuthenticated ? <Perfil /> : <Navigate to="/login" />} 
-          />
+          {/* Rutas Encadenadas (Anidadas) Privadas Generales SOLO PARA USUARIOS */}
+          <Route element={<ProtectedRoute allowedRoles={['user']} />}>
+            <Route path="/explorar" element={<Explorar />} />
+            <Route path="/matches" element={<Matches />} />
+            <Route path="/perfil" element={<Perfil />} />
+          </Route>
+
+          {/* Rutas Encadenadas Privadas de Administrador */}
+          <Route element={<ProtectedRoute allowedRoles={['admin']} />}>
+            <Route path="/admin/dashboard" element={<Dashboard />} />
+          </Route>
           
           <Route 
             path="*" 
-            element={<Navigate to={isAuthenticated ? "/explorar" : "/login"} />} 
+            element={<NotFound />} 
           />
         </Routes>
       </main>

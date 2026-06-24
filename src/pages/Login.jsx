@@ -11,25 +11,59 @@ import Button from '../components/Button';
 const Login = () => {
   const [formData, setFormData] = useState({ email: '', password: '' });
   const [error, setError] = useState('');
-  const [showPassword, setShowPassword] = useState("");
+  const [showPassword, setShowPassword] = useState(false);
+  
+  // verificar el OTP
+  const [showOtpModal, setShowOtpModal] = useState(false);
+  const [otpCode, setOtpCode] = useState('');
+  const [userEmail, setUserEmail] = useState('');
 
   const handleChange = (e) => {
     setFormData({ ...formData, [e.target.name]: e.target.value });
   };
 
-  // Función para el ingreso
   const handleSubmit = async (e) => {
     e.preventDefault();
     try {
-      // enviamos el correo y contraseña a nuestra API
       const response = await axios.post('http://localhost:3005/api/auth/login', formData);
 
-      // guardamos la llave de acceso (Token)
+      //mostral el modal
+      if (response.data.requireOtp) {
+        setUserEmail(response.data.email);
+        setShowOtpModal(true);
+        setError(''); 
+        return;
+      }
+      
       sessionStorage.setItem('token', response.data.token);
-
       window.location.href = '/explorar';
     } catch (err) {
       setError(err.response?.data?.error || 'Correo o contraseña incorrectos');
+    }
+  };
+
+
+  const handleVerifyOtp = async (e) => {
+    e.preventDefault();
+    try {
+      const res = await axios.post('http://localhost:3005/api/auth/verify-otp', {
+        email: userEmail,
+        otpCode: otpCode
+      });
+
+      // guardamos el token
+      sessionStorage.setItem('token', res.data.token);
+      sessionStorage.setItem('pettin_user', JSON.stringify(res.data)); 
+      
+
+      // redirigir segun el rol
+      if (res.data.role === 'admin') {
+        window.location.href = '/admin/dashboard';
+      } else {
+        window.location.href = '/explorar';
+      }
+    } catch (err) {
+      setError(err.response?.data?.error || 'Código incorrecto o expirado');
     }
   };
 
@@ -38,7 +72,7 @@ const Login = () => {
   }
 
   return (
-    <div className="flex h-[80vh] bg-white rounded-3xl overflow-hidden shadow-xl max-w-5xl mx-auto">
+    <div className="flex min-h-[80vh] bg-white rounded-3xl overflow-hidden shadow-xl max-w-5xl mx-auto my-8">
 
       <div className="hidden md:flex w-1/2 relative bg-gray-200">
         <img
@@ -117,6 +151,39 @@ const Login = () => {
           ¿No tienes cuenta? <Link to="/registro" className="text-brand-purple font-semibold">Regístrate</Link>
         </p>
       </div>
+
+      {/* MODAL DE VERIFICACIÓN OTP */}
+      {showOtpModal && (
+        <div className="fixed inset-0 bg-black/50 backdrop-blur-sm flex justify-center items-center z-50 p-4">
+          <div className="bg-white p-6 md:p-8 rounded-3xl shadow-xl w-full max-w-md text-center">
+            <h2 className="text-2xl font-bold text-gray-800 mb-2">Verificación en 2 pasos</h2>
+            <p className="text-gray-500 mb-6">Hemos enviado un código de 6 dígitos a <b>{userEmail}</b></p>
+            
+            {error && <div className="bg-red-100 text-red-600 p-3 rounded mb-4 text-sm">{error}</div>}
+
+            <form onSubmit={handleVerifyOtp} className="flex flex-col gap-4">
+              <input 
+                type="text" 
+                placeholder="Ingresa el código (ej. 123456)" 
+                value={otpCode}
+                onChange={(e) => setOtpCode(e.target.value)}
+                className="w-full text-center text-2xl tracking-[0.5em] py-3 border border-gray-300 rounded-xl focus:outline-none focus:border-brand-purple"
+                maxLength={6}
+                required
+              />
+              <Button type="submit" variant="primary" text="Verificar y Entrar" fullWidth />
+              <button 
+                type="button" 
+                onClick={() => setShowOtpModal(false)}
+                className="text-gray-400 text-sm mt-2 hover:text-gray-600"
+              >
+                Cancelar
+              </button>
+            </form>
+          </div>
+        </div>
+      )}
+
     </div>
   );
 };
