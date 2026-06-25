@@ -135,7 +135,7 @@ const Login = () => {
             <button
               type="button"
               onClick={toggleVisibility}
-              className="absolute right-5 top-1/2 -translate-y-3/4 flex items-center"
+              className="absolute right-5 top-1/2 -translate-y-4 flex items-center"
               aria-label={showPassword ? "Ocultar contraseña" : "Mostrar contraseña"}
             >
               <FontAwesomeIcon icon={showPassword ? faEyeSlash : faEye} className="h-5 w-5" />
@@ -167,7 +167,7 @@ const Login = () => {
                 placeholder="Ingresa el código (ej. 123456)" 
                 value={otpCode}
                 onChange={(e) => setOtpCode(e.target.value)}
-                className="w-full text-center text-2xl tracking-[0.5em] py-3 border border-gray-300 rounded-xl focus:outline-none focus:border-brand-purple"
+                className="text-center text-xl py-3 border border-gray-300 rounded-xl focus:outline-none focus:border-brand-purple"
                 maxLength={6}
                 required
               />
@@ -175,7 +175,7 @@ const Login = () => {
               <button 
                 type="button" 
                 onClick={() => setShowOtpModal(false)}
-                className="text-gray-400 text-sm mt-2 hover:text-gray-600"
+                className="text-gray-400 text-sm mt-2 hover:text-red-600 hover:font-bold hover:text-lg transition-all duration-200"
               >
                 Cancelar
               </button>

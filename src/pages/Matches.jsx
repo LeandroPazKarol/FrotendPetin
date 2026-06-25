@@ -99,7 +99,7 @@ const Matches = () => {
               animate={{ opacity: 1, scale: 1 }}
               transition={{ delay: i * 0.1 }}
               onClick={() => setSelectedMatch(match)}
-              className="bg-white hover:bg-red-100 rounded-3xl p-4 shadow-lg cursor-pointer transition-all transform hover:-translate-y-1 flex flex-col items-center border border-transparent hover:shadow-[0_0_40px_rgba(239,68,68,0.9)]"
+              className="bg-white hover:bg-red-100 rounded-3xl p-4 shadow-lg cursor-pointer transition-all transform hover:-translate-y-1 flex flex-col items-center border border-transparent hover:shadow-[0_0_50px_rgba(239,68,68,1)]"
             >
               <div className="w-24 h-24 rounded-full overflow-hidden shadow-inner mb-3 border-4 border-white relative">
                 <img

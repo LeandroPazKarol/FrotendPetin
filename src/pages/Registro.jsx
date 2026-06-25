@@ -98,8 +98,8 @@ const Registro = () => {
           <span className="text-2xl font-bold text-brand-purple">Pettin</span>
         </div>
 
-        <h1 className="text-4xl hover:3xl font-bold text-gray-800 mb-2 text-center hover:text-left">Crear cuenta</h1>
-        <p className="text-gray-500 text-md hover:text-sm mb-4 text-center hover:text-left">Únete a nuestra comunidad y encuentra amigos para tu mascota</p>
+        <h1 className="text-4xl hover:3xl font-bold text-gray-800 mb-2 text-center md:text-left">Crear cuenta</h1>
+        <p className="text-gray-500 text-md hover:text-sm mb-4 text-center md:text-left">Únete a nuestra comunidad y encuentra amigos para tu mascota</p>
 
      
         <div className="flex flex-col gap-3 mb-4">
@@ -128,7 +128,7 @@ const Registro = () => {
             <button
               type="button"
               onClick={() => toggleVisibility('password')}
-              className="absolute right-5 top-1/2 -translate-y-3/4 flex items-center"
+              className="absolute right-5 top-1/2 -translate-y-4 flex items-center"
               aria-label={showPassword ? "Ocultar contraseña" : "Mostrar contraseña"}
             >
               <FontAwesomeIcon icon={showPassword ? faEyeSlash : faEye} className="h-5 w-5"/>
@@ -144,7 +144,7 @@ const Registro = () => {
             <button
               type="button"
               onClick={() => toggleVisibility('confirmPassword')}
-              className="absolute right-5 top-1/2 -translate-y-3/4 flex items-center"
+              className="absolute right-5 top-1/2 -translate-y-4 flex items-center"
               aria-label={showConfirmPassword ? "Ocultar confirmar contraseña" : "Mostrar confirmar contraseña"}
             >
               <FontAwesomeIcon icon={showConfirmPassword ? faEyeSlash : faEye} className="h-5 w-5"/>
@@ -156,7 +156,7 @@ const Registro = () => {
           </div>
         </form>
 
-        <p className="text-center text-sm text-gray-500 mt-2">
+        <p className="text-center text-sm text-gray-500 mt-6">
           ¿Ya tienes cuenta? <Link to="/login" className="text-brand-purple font-semibold">Inicia sesión</Link>
         </p>
       </div>
