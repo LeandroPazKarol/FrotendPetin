@@ -1,4 +1,4 @@
-import { Routes, Route } from 'react-router-dom';
+import { Routes, Route, Navigate } from 'react-router-dom';
 import Navbar from './components/Navbar';
 import Registro from './pages/Registro';
 import Login from './pages/Login';
@@ -19,6 +19,9 @@ function App() {
 
       <main className="container mx-auto px-4 py-8">
         <Routes>
+          {/* Ruta Raíz: Redirige automáticamente al Login */}
+          <Route path="/" element={<Navigate to="/login" replace />} />
+
           {/* Rutas Públicas */}
           <Route path="/registro" element={<Registro />} />
           <Route path="/login" element={<Login />} />
