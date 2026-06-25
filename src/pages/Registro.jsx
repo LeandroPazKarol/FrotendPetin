@@ -34,7 +34,7 @@ const Registro = () => {
     e.preventDefault();
     try {
       // nuevo usuario en la bd
-      const response = await axios.post('http://localhost:3005/api/auth/register', formData);
+      const response = await axios.post(`${import.meta.env.VITE_API_URL}/api/auth/register`, formData);
       
       if (response.data.requireOtp) {
         setUserEmail(response.data.email);
@@ -54,7 +54,7 @@ const Registro = () => {
   const handleVerifyOtp = async (e) => {
     e.preventDefault();
     try {
-      const res = await axios.post('http://localhost:3005/api/auth/verify-otp', {
+      const res = await axios.post(`${import.meta.env.VITE_API_URL}/api/auth/verify-otp`, {
         email: userEmail,
         otpCode: otpCode
       });

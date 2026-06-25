@@ -25,7 +25,7 @@ const Dashboard = () => {
         const loadRealPets = async () => {
             try {
                 setLoadingPets(true);
-                const res = await axios.get('http://localhost:3005/api/admin/pets', { headers });
+                const res = await axios.get(`${import.meta.env.VITE_API_URL}/api/admin/pets`, { headers });
                 setPets(res.data);
             } catch (error) {
                 console.error("Error cargando mascotas:", error);
@@ -37,7 +37,7 @@ const Dashboard = () => {
         // carga de datos
         const loadStats = async () => {
             try {
-                const res = await axios.get('http://localhost:3005/api/admin/stats', { headers });
+                const res = await axios.get(`${import.meta.env.VITE_API_URL}/api/admin/stats`, { headers });
                 setStats(res.data);
             } catch (error) {
                 console.error("Error cargando estadísticas:", error);
@@ -47,7 +47,7 @@ const Dashboard = () => {
         // carga de matches
         const loadMatches = async () => {
             try {
-                const res = await axios.get('http://localhost:3005/api/admin/matches', { headers });
+                const res = await axios.get(`${import.meta.env.VITE_API_URL}/api/admin/matches`, { headers });
                 setRecentMatches(res.data);
             } catch (error) {
                 console.error("Error cargando matches:", error);

@@ -25,7 +25,7 @@ const Login = () => {
   const handleSubmit = async (e) => {
     e.preventDefault();
     try {
-      const response = await axios.post('http://localhost:3005/api/auth/login', formData);
+      const response = await axios.post(`${import.meta.env.VITE_API_URL}/api/auth/login`, formData);
 
       //mostral el modal
       if (response.data.requireOtp) {
@@ -46,7 +46,7 @@ const Login = () => {
   const handleVerifyOtp = async (e) => {
     e.preventDefault();
     try {
-      const res = await axios.post('http://localhost:3005/api/auth/verify-otp', {
+      const res = await axios.post(`${import.meta.env.VITE_API_URL}/api/auth/verify-otp`, {
         email: userEmail,
         otpCode: otpCode
       });

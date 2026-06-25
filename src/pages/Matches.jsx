@@ -15,7 +15,7 @@ const Matches = () => {
       const token = sessionStorage.getItem("token");
       try {
         const myPetsRes = await axios.get(
-          "http://localhost:3005/api/pets/my-pets",
+          `${import.meta.env.VITE_API_URL}/api/pets/my-pets`,
           {
             headers: {
               Authorization: `Bearer ${token}`,
@@ -29,7 +29,7 @@ const Matches = () => {
           setMyPetId(petId);
 
           const matchRes = await axios.get(
-            `http://localhost:3005/api/matches/${petId}`,
+            `${import.meta.env.VITE_API_URL}/api/matches/${petId}`,
             {
               headers: {
                 Authorization: `Bearer ${token}`,

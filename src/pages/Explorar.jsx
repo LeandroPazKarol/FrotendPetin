@@ -32,7 +32,7 @@ const Explorar = () => {
       const token = sessionStorage.getItem("token");
       try {
         const myPetsRes = await axios.get(
-          "http://localhost:3005/api/pets/my-pets",
+          `${import.meta.env.VITE_API_URL}/api/pets/my-pets`,
           {
             headers: {
               Authorization: `Bearer ${token}`,
@@ -45,7 +45,7 @@ const Explorar = () => {
           setMyPetId(myPetsRes.data[0]._id);
         }
 
-        const res = await axios.get("http://localhost:3005/api/pets", {
+        const res = await axios.get(`${import.meta.env.VITE_API_URL}/api/pets`, {
           headers: {
             Authorization: `Bearer ${token}`,
             "Cache-Control": "no-cache",
@@ -83,7 +83,7 @@ const Explorar = () => {
       }
 
       const res = await axios.post(
-        "http://localhost:3005/api/matches/swipe",
+        `${import.meta.env.VITE_API_URL}/api/matches/swipe`,
         {
           fromPetId: myPetId,
           toPetId: toPetId,

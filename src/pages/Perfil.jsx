@@ -15,7 +15,7 @@ const Perfil = () => {
     const token = sessionStorage.getItem('token');
     
     // Obtenemos el nombre y correo del DUEÑO desde la base de datos
-    axios.get('http://localhost:3005/api/auth/me', {
+    axios.get(`${import.meta.env.VITE_API_URL}/api/auth/me`, {
       headers: { 
         Authorization: `Bearer ${token}`,
         'Cache-Control': 'no-cache' 
@@ -25,7 +25,7 @@ const Perfil = () => {
     }).catch(err => console.log(err));
 
     //Averiguamos si este dueño ya tiene una MASCOTA registrada
-    axios.get('http://localhost:3005/api/pets/my-pets', {
+    axios.get(`${import.meta.env.VITE_API_URL}/api/pets/my-pets`, {
       headers: { 
         Authorization: `Bearer ${token}`,
         'Cache-Control': 'no-cache'
@@ -64,7 +64,7 @@ const Perfil = () => {
 
     try {
       // se encargar de subir la foto a Cloudinary
-      await axios.post('http://localhost:3005/api/pets', formData, {
+      await axios.post(`${import.meta.env.VITE_API_URL}/api/pets`, formData, {
         headers: { 
           Authorization: `Bearer ${token}`,
           'Content-Type': 'multipart/form-data' 
