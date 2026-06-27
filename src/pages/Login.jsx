@@ -36,7 +36,14 @@ const Login = () => {
       }
       
       sessionStorage.setItem('token', response.data.token);
-      window.location.href = '/explorar';
+      sessionStorage.setItem('pettin_user', JSON.stringify(response.data));
+
+      // redirigir segun el rol
+      if (response.data.role === 'admin') {
+        window.location.href = '/admin/dashboard';
+      } else {
+        window.location.href = '/explorar';
+      }
     } catch (err) {
       setError(err.response?.data?.error || 'Correo o contraseña incorrectos');
     }

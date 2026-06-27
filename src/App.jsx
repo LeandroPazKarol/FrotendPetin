@@ -1,4 +1,4 @@
-import { Routes, Route, Navigate } from 'react-router-dom';
+import { Routes, Route, Navigate, useLocation } from 'react-router-dom';
 import Navbar from './components/Navbar';
 import Registro from './pages/Registro';
 import Login from './pages/Login';
@@ -12,10 +12,12 @@ import ProtectedRoute from './components/ProtectedRoute';
 function App() {
   // Verificamos si el usuario ya inició sesión para renderizar el Navbar
   const isAuthenticated = !!sessionStorage.getItem('token');
+  const location = useLocation();
+  const isAdminRoute = location.pathname.startsWith('/admin');
 
   return (
     <div className="min-h-screen bg-[#FAF8FC]">
-      {isAuthenticated && <Navbar />}
+      {isAuthenticated && !isAdminRoute && <Navbar />}
 
       <main className="container mx-auto px-4 py-8">
         <Routes>

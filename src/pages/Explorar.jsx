@@ -2,6 +2,7 @@ import { useState, useEffect, useMemo } from "react";
 import axios from "axios";
 import PetCard from "../components/PetCard";
 import { AnimatePresence, motion } from "framer-motion";
+import ProfilePet from "../components/ProfilePet";
 
 // datos de prueba estáticos.
 const DUMMY_PETS = [
@@ -26,6 +27,8 @@ const Explorar = () => {
 
   const [searchTerm, setSearchTerm] = useState("");
   const [speciesFilter, setSpeciesFilter] = useState("all");
+
+  const [selectedPet, setSelectedPet] = useState(null);
 
   useEffect(() => {
     const fetchData = async () => {
@@ -133,6 +136,18 @@ const Explorar = () => {
 
   return (
     <div className="max-w-6xl mx-auto px-4 relative">
+      
+      {selectedPet && (
+        <ProfilePet
+          pet={selectedPet}
+          onClose={() => setSelectedPet(null)}
+          onSwipe={(action) => {
+            handleSwipe(action, selectedPet._id);
+            setSelectedPet(null);
+          }}
+        />
+      )}
+
       {matchPopup && (
         <motion.div
           initial={{ scale: 0.5, opacity: 0 }}
@@ -158,8 +173,8 @@ const Explorar = () => {
       )}
 
       <div className="text-center mb-8">
-        <h1 className="text-3xl font-bold text-gray-800">
-          Mascotas destacadas
+        <h1 className="text-4xl font-bold text-gray-800">
+          Mascotas Destacadas
         </h1>
         <div className="flex flex-col sm:flex-row justify-center items-center gap-4 mt-6">
           <input
@@ -193,8 +208,10 @@ const Explorar = () => {
       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-8 place-items-center">
         <AnimatePresence>
           {filteredPets.length === 0 ? (
-            <p className="text-gray-500 col-span-1 sm:col-span-2 lg:col-span-3 text-center">
-              No hay más mascotas cerca por ahora. ¡Vuelve pronto!
+            <p className="text-gray-500 text-2xl col-span-1 sm:col-span-2 lg:col-span-3 text-center">
+              No hay más mascotas cerca por ahora.
+              <br/>
+              <span className="text-brand-pink font-bold text-5xl animate-bounce">¡Vuelve pronto!</span>
             </p>
           ) : (
             filteredPets.map((pet) => (
@@ -202,6 +219,7 @@ const Explorar = () => {
                 key={pet._id}
                 pet={pet}
                 onSwipe={(action) => handleSwipe(action, pet._id)}
+                onViewProfile={(pet) => setSelectedPet(pet)}
               />
             ))
           )}

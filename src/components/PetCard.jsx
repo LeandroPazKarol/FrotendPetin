@@ -1,6 +1,6 @@
 import { motion } from 'framer-motion';
 
-const PetCard = ({ pet, onSwipe }) => {
+const PetCard = ({ pet, onSwipe, onViewProfile }) => {
   const imageUrl = pet?.photos?.length > 0 ? pet.photos[0] : 'https://images.unsplash.com/photo-1543466835-00a7907e9de1?ixlib=rb-4.0.3&auto=format&fit=crop&w=400&q=80';
 
   return (
@@ -49,6 +49,7 @@ const PetCard = ({ pet, onSwipe }) => {
           </motion.button>
           <motion.button 
             whileHover={{ scale: 1.1 }} whileTap={{ scale: 0.9 }}
+            onClick={() => onViewProfile(pet)}
             className="w-12 h-12 rounded-full border border-gray-200 flex justify-center items-center text-orange-400 text-xl hover:bg-orange-50 transition-colors shadow-sm"
           >
             🐾

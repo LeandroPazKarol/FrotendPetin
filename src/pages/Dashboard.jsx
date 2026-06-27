@@ -1,9 +1,11 @@
 import { useEffect, useMemo, useState } from "react";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faPaw, faUsers, faChartLine, faShieldHalved, faMagnifyingGlass } from "@fortawesome/free-solid-svg-icons";
-import axios from 'axios'; 
+import { useNavigate } from "react-router-dom";
+import axios from 'axios';
 
 const Dashboard = () => {
+    const navigate = useNavigate();
     const [pets, setPets] = useState([]);
     const [loadingPets, setLoadingPets] = useState(true);
     const publicImages = useMemo(() => {
@@ -13,7 +15,7 @@ const Dashboard = () => {
     const [speciesFilter, setSpeciesFilter] = useState("all");
     const [isOpen, setIsOpen] = useState(false);
 
- 
+
     const [stats, setStats] = useState({ users: 0, pets: 0, matches: 0, status: "CARGANDO" });
     const [recentMatches, setRecentMatches] = useState([]);
 
@@ -59,10 +61,6 @@ const Dashboard = () => {
         loadMatches();
     }, []);
 
-
-
-
-
     const filteredPets = useMemo(() => {
         return pets.filter((pet) => {
             const matchesSearch = pet.name
@@ -88,20 +86,26 @@ const Dashboard = () => {
         }
     }
 
+    const handleLogout = () => {
+        sessionStorage.removeItem('token');
+        navigate('/login');
+        window.location.reload();
+    };
+
     return (
         <div className="min-h-screen bg-slate-600 from-slate-50 via-white to-purple-50 p-3 rounded-3xl shadow-[inset_0_0_0_1px_rgba(255,255,255,0.3),_inset_0px_0px_15px_rgba(0,0,0,0.8)]">
             <div className="max-w-7xl mx-auto rounded-2xl p-8">
                 <div className="mb-10">
-                    <h1 className="text-5xl sm:text-6xl md:text-7xl font-extrabold text-white flex flex-wrap items-baseline gap-x-3 leading-none">
-                        Dashboard <span className="text-3xl text-slate-300 font-medium">Administrador</span>
+                    <h1 className="text-5xl md:text-6xl font-extrabold text-white flex flex-wrap items-baseline gap-x-3 leading-none">
+                        Dashboard <span className="text-3xl text-slate-300 italic">Administrador</span>
                     </h1>
                     <p className="text-slate-300 mt-3 text-xl md:text-xl">Gestiona usuarios, mascotas y actividad en tiempo real.</p>
                 </div>
 
                 <div className="grid grid-cols-1 lg:grid-cols-12 gap-8">
-                    <aside className="lg:col-span-3 backdrop-blur-md bg-slate-500/70 rounded-3xl shadow-xl p-6 h-fit sticky top-10 relative z-30">
+                    <aside className="lg:col-span-3 backdrop-blur-md bg-slate-500/80 rounded-3xl shadow-xl p-6 h-fit sticky top-10 relative z-30">
                         <div className="flex justify-between items-center mb-1 md:mb-3">
-                            <h2 className="text-3xl font-bold text-yellow-500">Menu</h2>
+                            <h2 className="text-2xl font-bold text-yellow-500">Menu</h2>
                             <button
                                 className="lg:hidden text-2xl text-white focus:outline-none"
                                 onClick={() => setIsOpen(!isOpen)}
@@ -114,6 +118,12 @@ const Dashboard = () => {
                             <a href="#pets" onClick={(e) => handleScroll(e, 'pets')} className="block text-white hover:text-purple-700 hover:bg-purple-50 px-4 py-2.5 rounded-2xl font-medium transition-all duration-300">Mascotas</a>
                             <a href="#matches" onClick={(e) => handleScroll(e, 'matches')} className="block text-white hover:text-purple-700 hover:bg-purple-50 px-4 py-2.5 rounded-2xl font-medium transition-all duration-300">Matches</a>
                             <a href="#public" onClick={(e) => handleScroll(e, 'public')} className="block text-white hover:text-purple-700 hover:bg-purple-50 px-4 py-2.5 rounded-2xl font-medium transition-all duration-300">API Publica</a>
+                            <button
+                                onClick={handleLogout}
+                                className="block text-white font-bold hover:text-red-700 hover:bg-red-50 px-4 py-2.5 rounded-2xl font-medium transition-all duration-300"
+                            >
+                                Cerrar Sesión
+                            </button>
                         </nav>
                         {isOpen && (
                             <nav className="lg:hidden flex flex-col gap-2 mt-4 pt-4 border-t border-gray-100 text-gray-600 font-bold">
@@ -121,12 +131,19 @@ const Dashboard = () => {
                                 <a href="#pets" onClick={(e) => handleScroll(e, 'pets')} className="block text-white hover:text-purple-700 hover:bg-purple-200 px-4 py-2.5 rounded-2xl font-medium transition-all duration-300">Mascotas</a>
                                 <a href="#matches" onClick={(e) => handleScroll(e, 'matches')} className="block text-white hover:text-purple-700 hover:bg-purple-200 px-4 py-2.5 rounded-2xl font-medium transition-all duration-300">Matches</a>
                                 <a href="#public" onClick={(e) => handleScroll(e, 'public')} className="block text-white hover:text-purple-700 hover:bg-purple-200 px-4 py-2.5 rounded-2xl font-medium transition-all duration-300">API Publica</a>
+                                <hr className="border-gray-100" />
+                                <button
+                                    onClick={() => handleLogout()}
+                                    className="text-left text-red-300 hover:text-white hover:bg-red-400 rounded-2xl text-base font-bold hover:font-extrabold px-4 py-2.5 transition-all duration-300"
+                                >
+                                    Cerrar Sesión
+                                </button>
                             </nav>
                         )}
                     </aside>
 
                     <div className="lg:col-span-9 space-y-10">
-                        <section id="stats" className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-4 gap-6">
+                        <section id="stats" className="grid grid-cols-2 xl:grid-cols-4 gap-6">
                             <div className="bg-white rounded-3xl shadow-xl p-6">
                                 <div className="flex items-center justify-between">
                                     <div>

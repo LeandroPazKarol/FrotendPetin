@@ -14,7 +14,7 @@ const Navbar = () => {
   };
 
   return (
-    <nav className="sticky top-0 z-50 flex justify-between items-center px-6 py-4 backdrop-blur-md bg-white/90 md:shadow-lg md:shadow-purple-300 md:border-b-2 md:border-purple-100">
+    <nav className="sticky top-0 z-50 flex justify-between items-center px-6 py-4 backdrop-blur-md bg-white/80 md:shadow-lg md:shadow-purple-300 md:border-b-2 md:border-purple-100">
         {/* Logo */}
         <div className="flex justify-start items-center gap-2">
           <div className="w-10 h-10 rounded bg-gradient-brand flex items-center justify-center text-white font-bold">
@@ -53,13 +53,13 @@ const Navbar = () => {
 
       {isOpen && (
         <div className="md:hidden absolute top-full left-0 w-full backdrop-blur-md bg-white/90 shadow-lg py-4 px-6 flex flex-col gap-4 text-gray-600 font-medium">
-          <Link to="/explorar" onClick={() => setIsOpen(false)} className="hover:text-brand-purple p-2 transition-all duration-500">🏠 Explorar</Link>
-          <Link to="/matches" onClick={() => setIsOpen(false)} className="hover:text-brand-purple p-2 transition-all duration-500">💖 Matches</Link>
-          <Link to="/perfil" onClick={() => setIsOpen(false)} className="hover:text-brand-purple p-2 transition-all duration-500">👤 Perfil</Link>
-          <hr className="border-gray-100" />
+          <Link to="/explorar" onClick={() => setIsOpen(false)} className="hover:text-white hover:bg-purple-400 rounded-2xl p-2 hover:px-4 transition-all duration-300">🏠 Explorar</Link>
+          <Link to="/matches" onClick={() => setIsOpen(false)} className="hover:text-white hover:bg-purple-400 rounded-2xl p-2 hover:px-4 transition-all duration-300">💖 Matches</Link>
+          <Link to="/perfil" onClick={() => setIsOpen(false)} className="hover:text-white hover:bg-purple-400 rounded-2xl p-2 hover:px-4 transition-all duration-300">👤 Perfil</Link>
+          <hr className="border-gray-400" />
           <button 
             onClick={handleLogout}
-            className="text-left text-red-500 text-base font-bold hover:font-extrabold p-2"
+            className="text-left text-black hover:text-white hover:bg-gradient-brand rounded-2xl py-2.5 text-base font-bold hover:px-4 transition-all duration-300"
           >
             Cerrar Sesión
           </button>
