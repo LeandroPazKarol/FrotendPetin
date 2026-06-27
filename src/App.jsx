@@ -1,7 +1,8 @@
-import { Routes, Route, Navigate, useLocation } from 'react-router-dom';
+import { Routes, Route, useLocation } from 'react-router-dom';
 import Navbar from './components/Navbar';
 import Registro from './pages/Registro';
 import Login from './pages/Login';
+import Landing from './pages/Landing';
 import Explorar from './pages/Explorar';
 import Perfil from './pages/Perfil';
 import Matches from './pages/Matches';
@@ -14,19 +15,22 @@ function App() {
   const isAuthenticated = !!sessionStorage.getItem('token');
   const location = useLocation();
   const isAdminRoute = location.pathname.startsWith('/admin');
+  const isLandingRoute = location.pathname === '/' || location.pathname === '/landing';
 
   return (
     <div className="min-h-screen bg-[#FAF8FC]">
       {isAuthenticated && !isAdminRoute && <Navbar />}
 
-      <main className="container mx-auto px-4 py-8">
+      <main className={isLandingRoute ? 'min-h-screen' : 'container mx-auto px-4 py-8'}>
         <Routes>
-          {/* Ruta Raíz: Redirige automáticamente al Login */}
-          <Route path="/" element={<Navigate to="/login" replace />} />
+              {/* Ruta Raíz: Landing publica */}
+          <Route path="/" element={<Landing />} />
+
 
           {/* Rutas Públicas */}
           <Route path="/registro" element={<Registro />} />
           <Route path="/login" element={<Login />} />
+          <Route path="/landing" element={<Landing/>} />
 
           {/* Rutas Encadenadas (Anidadas) Privadas Generales SOLO PARA USUARIOS */}
           <Route element={<ProtectedRoute allowedRoles={['user']} />}>

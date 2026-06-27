@@ -2,7 +2,7 @@ import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 
 const Button = ({ text, onClick, variant = 'primary', type = 'button', fullWidth = false, icon }) => {
   // Clases base para todos los botones
-  let baseClasses = "px-6 py-3 rounded-full font-semibold transition-all duration-300 flex justify-center items-center gap-2";
+  let baseClasses = "px-6 py-3 rounded-full font-semibold transition-all duration-300 flex justify-center items-center gap-2 focus:outline-none focus-visible:ring-2 focus-visible:ring-brand-purple focus-visible:ring-offset-2";
 
   if (fullWidth) {
     baseClasses += " w-full";

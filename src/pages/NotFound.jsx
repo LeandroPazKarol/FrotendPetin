@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react';
+import { useState } from 'react';
 import { Link } from 'react-router-dom';
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faBone, faArrowRightToBracket, faPaw } from "@fortawesome/free-solid-svg-icons";
@@ -18,14 +18,9 @@ const funnyImages = [
 ];
 
 const NotFound = () => {
-    const [randomMsg, setRandomMsg] = useState('');
-    const [randomImg, setRandomImg] = useState('');
+    const [randomMsg] = useState(() => funnyMessages[Math.floor(Math.random() * funnyMessages.length)]);
+    const [randomImg] = useState(() => funnyImages[Math.floor(Math.random() * funnyImages.length)]);
     const [isBouncing, setIsBouncing] = useState(false);
-
-    useEffect(() => {
-        setRandomMsg(funnyMessages[Math.floor(Math.random() * funnyMessages.length)]);
-        setRandomImg(funnyImages[Math.floor(Math.random() * funnyImages.length)]);
-    }, []);
 
     const playWithPet = () => {
         setIsBouncing(true);
@@ -68,7 +63,7 @@ const NotFound = () => {
 
                 {/* Botones funcionales */}
                 <div className="flex flex-col sm:flex-row gap-4 w-full justify-center">
-                    <Link to="/explorar" className="bg-black hover:bg-gray-800 text-white font-semibold py-4 px-8 rounded-full transition-all duration-300 transform hover:-translate-y-1 hover:shadow-xl flex items-center justify-center gap-3">
+                    <Link to="/landing" className="bg-black hover:bg-gray-800 text-white font-semibold py-4 px-8 rounded-full transition-all duration-300 transform hover:-translate-y-1 hover:shadow-xl flex items-center justify-center gap-3">
                         <FontAwesomeIcon icon={faPaw} className="text-pink-400" />
                         Ir a Explorar
                     </Link>
