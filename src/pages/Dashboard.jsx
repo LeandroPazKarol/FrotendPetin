@@ -201,7 +201,7 @@ const Dashboard = () => {
             <div className="flex justify-between items-center mb-3">
               <h2 className="text-2xl font-bold text-yellow-500">Menu</h2>
               <button className="lg:hidden text-2xl text-white" onClick={() => setIsOpen((current) => !current)}>
-                {isOpen ? "x" : "menu"}
+                {isOpen ? "x" : "☰"}
               </button>
             </div>
             <nav className={`${isOpen ? "flex" : "hidden"} lg:flex flex-col gap-3`}>
@@ -210,7 +210,7 @@ const Dashboard = () => {
               <a href="#pets" onClick={(event) => handleScroll(event, "pets")} className="text-white hover:text-purple-700 hover:bg-purple-50 px-4 py-2.5 rounded-2xl font-medium transition-all">Mascotas</a>
               <a href="#matches" onClick={(event) => handleScroll(event, "matches")} className="text-white hover:text-purple-700 hover:bg-purple-50 px-4 py-2.5 rounded-2xl font-medium transition-all">Matches</a>
               <a href="#gallery" onClick={(event) => handleScroll(event, "gallery")} className="text-white hover:text-purple-700 hover:bg-purple-50 px-4 py-2.5 rounded-2xl font-medium transition-all">Galeria</a>
-              <button onClick={handleLogout} className="text-left text-red-100 hover:text-red-700 hover:bg-red-50 px-4 py-2.5 rounded-2xl font-bold transition-all">
+              <button onClick={handleLogout} className="text-left text-white hover:bg-red-400 px-4 py-2.5 rounded-2xl font-bold transition-all">
                 Cerrar Sesion
               </button>
             </nav>
@@ -223,7 +223,7 @@ const Dashboard = () => {
               </div>
             )}
 
-            <section id="stats" className="grid grid-cols-2 xl:grid-cols-4 gap-6">
+            <section id="stats" className="grid grid-cols-2 xl:grid-cols-4 gap-2">
               {[
                 ["Mascotas registradas", stats.pets, faPaw, "text-purple-600", "bg-purple-100"],
                 ["Usuarios activos", stats.users, faUsers, "text-pink-600", "bg-pink-100"],
@@ -330,7 +330,7 @@ const Dashboard = () => {
               )}
 
               {editingUser && (
-                <form onSubmit={handleUpdateUser} className="mt-6 grid grid-cols-1 md:grid-cols-4 gap-3 bg-slate-50 rounded-2xl p-5">
+                <form onSubmit={handleUpdateUser} className="mt-6 grid grid-cols-1 md:grid-cols-2 xl:grid-cols-4 gap-3 bg-slate-50 rounded-2xl p-5">
                   <input value={editingUser.name} onChange={(event) => setEditingUser((current) => ({ ...current, name: event.target.value }))} className="px-4 py-2 border border-gray-200 rounded-xl" placeholder="Nombre" />
                   <input type="email" value={editingUser.email} onChange={(event) => setEditingUser((current) => ({ ...current, email: event.target.value }))} className="px-4 py-2 border border-gray-200 rounded-xl" placeholder="Correo" />
                   <select value={editingUser.role} onChange={(event) => setEditingUser((current) => ({ ...current, role: event.target.value }))} className="px-4 py-2 border border-gray-200 rounded-xl">

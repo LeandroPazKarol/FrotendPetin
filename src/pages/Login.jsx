@@ -2,6 +2,7 @@ import { useState } from 'react';
 import { Link } from 'react-router-dom';
 import axios from 'axios';
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+import { faArrowRightFromBracket } from "@fortawesome/free-solid-svg-icons";
 import { faApple } from "@fortawesome/free-brands-svg-icons";
 import { faGoogle } from "@fortawesome/free-brands-svg-icons";
 import { faEye, faEyeSlash } from "@fortawesome/free-solid-svg-icons"
@@ -95,6 +96,17 @@ const Login = () => {
 
 
       <div className="w-full md:w-1/2 p-8 md:p-12 flex flex-col justify-center">
+        <div className="relative w-full h-16">
+          <Link to="/landing" className="absolute -right-4 -top-4 flex items-center text-white hover:font-bold bg-red-300 hover:bg-red-500 rounded-full">
+            <a className="p-2 flex items-center gap-2 px-5">
+              <FontAwesomeIcon
+                icon={faArrowRightFromBracket}
+                className="cursor-pointer hover:opacity-90"
+              />
+              <p>Salir</p>
+            </a>
+          </Link>
+        </div>
         <div className="flex justify-center md:justify-start items-center gap-2 mb-6">
           <div className="w-10 h-10 rounded bg-gradient-brand flex items-center justify-center text-white font-bold">
             <span className="[text-shadow:0_0_4px_#fff] text-2xl">🐾</span>

@@ -81,7 +81,7 @@ const Landing = () => {
     <div className="min-h-screen overflow-x-hidden bg-[linear-gradient(180deg,#ffffff_0%,#fbf8ff_28%,#efe4ff_54%,#c08cff_78%,#8A2BE2_100%)] text-gray-900">
       <header className="mx-auto flex w-full max-w-7xl items-center justify-between px-4 py-5 sm:px-6 lg:px-8">
         <Link to="/" className="flex min-w-0 items-center gap-3 rounded-2xl focus:outline-none focus-visible:ring-2 focus-visible:ring-brand-purple focus-visible:ring-offset-2">
-          <span className="flex h-11 w-11 shrink-0 items-center justify-center rounded-full bg-gradient-brand text-2xl text-white shadow-soft">
+          <span className="flex h-11 w-11 shrink-0 items-center justify-center rounded-full bg-gradient-brand text-2xl text-white shadow-soft [text-shadow:0_0_4px_#fff]">
             🐾
           </span>
           <span className="min-w-0">
