@@ -1,8 +1,8 @@
 import { useState, useEffect, useRef } from 'react';
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faPaperPlane, faCircleLeft } from "@fortawesome/free-solid-svg-icons";
-import axios from 'axios';
 import { io } from 'socket.io-client';
+import { API_URL, messagesApi } from '../services/api';
 
 const ChatWindow = ({ match, myPetId, onClose }) => {
   const [messages, setMessages] = useState([]);
@@ -16,11 +16,8 @@ const ChatWindow = ({ match, myPetId, onClose }) => {
   useEffect(() => {
     // historial de chay
     const fetchHistory = async () => {
-      const token = sessionStorage.getItem('token');
       try {
-        const res = await axios.get(`http://localhost:3005/api/messages/${roomId}`, {
-          headers: { Authorization: `Bearer ${token}` }
-        });
+        const res = await messagesApi.listByRoom(roomId);
         setMessages(res.data);
       } catch (error) {
         console.error("Error al obtener historial", error);
@@ -29,7 +26,7 @@ const ChatWindow = ({ match, myPetId, onClose }) => {
     fetchHistory();
 
     // socket.io
-    socketRef.current = io('http://localhost:3005');
+    socketRef.current = io(API_URL);
     
     socketRef.current.emit('join_chat', roomId);
 

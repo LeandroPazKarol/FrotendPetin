@@ -7,6 +7,7 @@ import { faGoogle } from "@fortawesome/free-brands-svg-icons";
 import { faEye, faEyeSlash } from "@fortawesome/free-solid-svg-icons"
 import InputBox from '../components/InputBox';
 import Button from '../components/Button';
+import { API_URL } from '../services/api';
 
 const Login = () => {
   const [formData, setFormData] = useState({ email: '', password: '' });
@@ -25,7 +26,7 @@ const Login = () => {
   const handleSubmit = async (e) => {
     e.preventDefault();
     try {
-      const response = await axios.post(`${import.meta.env.VITE_API_URL}/api/auth/login`, formData);
+      const response = await axios.post(`${API_URL}/api/auth/login`, formData);
 
       //mostral el modal
       if (response.data.requireOtp) {
@@ -53,7 +54,7 @@ const Login = () => {
   const handleVerifyOtp = async (e) => {
     e.preventDefault();
     try {
-      const res = await axios.post(`${import.meta.env.VITE_API_URL}/api/auth/verify-otp`, {
+      const res = await axios.post(`${API_URL}/api/auth/verify-otp`, {
         email: userEmail,
         otpCode: otpCode
       });

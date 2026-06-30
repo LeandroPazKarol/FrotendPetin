@@ -1,7 +1,7 @@
 import { useState, useEffect } from "react";
-import axios from "axios";
 import { motion } from "framer-motion";
 import ChatWindow from "../components/ChatWindow";
+import { getApiError, matchesApi, petsApi } from "../services/api";
 
 const Matches = () => {
   const [matches, setMatches] = useState([]);
@@ -12,35 +12,18 @@ const Matches = () => {
   // Carga inicial de datos al entrar a la pantalla de Matches
   useEffect(() => {
     const fetchMatches = async () => {
-      const token = sessionStorage.getItem("token");
       try {
-        const myPetsRes = await axios.get(
-          `${import.meta.env.VITE_API_URL}/api/pets/my-pets`,
-          {
-            headers: {
-              Authorization: `Bearer ${token}`,
-              "Cache-Control": "no-cache",
-            },
-          },
-        );
+        const myPetsRes = await petsApi.listMine();
 
         if (myPetsRes.data.length > 0) {
           const petId = myPetsRes.data[0]._id;
           setMyPetId(petId);
 
-          const matchRes = await axios.get(
-            `${import.meta.env.VITE_API_URL}/api/matches/${petId}`,
-            {
-              headers: {
-                Authorization: `Bearer ${token}`,
-                "Cache-Control": "no-cache",
-              },
-            },
-          );
+          const matchRes = await matchesApi.listByPet(petId);
           setMatches(matchRes.data);
         }
       } catch (error) {
-        console.error("Error al obtener matches", error);
+        console.error(getApiError(error, "Error al obtener matches"));
       } finally {
         setLoading(false);
       }

@@ -1,142 +1,119 @@
-import { useState, useEffect, useMemo } from "react";
-import axios from "axios";
-import PetCard from "../components/PetCard";
+import { useEffect, useState } from "react";
 import { AnimatePresence, motion } from "framer-motion";
+import PetCard from "../components/PetCard";
 import ProfilePet from "../components/ProfilePet";
+import { getApiError, matchesApi, petsApi } from "../services/api";
 
-// datos de prueba estáticos.
-const DUMMY_PETS = [
-  {
-    _id: "1",
-    name: "Luna",
-    age: 2,
-    description:
-      "Perrita amigable y juguetona que ama caminar y recibir cariño.",
-    photos: [
-      "https://images.unsplash.com/photo-1543466835-00a7907e9de1?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&q=80",
-    ],
-  },
-];
+const initialFilters = {
+  search: "",
+  type: "",
+  lookingFor: "",
+  minAge: "",
+  maxAge: "",
+};
 
 const Explorar = () => {
   const [pets, setPets] = useState([]);
   const [myPetId, setMyPetId] = useState(null);
   const [loading, setLoading] = useState(true);
+  const [applyingFilters, setApplyingFilters] = useState(false);
+  const [error, setError] = useState("");
   const [message, setMessage] = useState("");
   const [matchPopup, setMatchPopup] = useState(null);
-
-  const [searchTerm, setSearchTerm] = useState("");
-  const [speciesFilter, setSpeciesFilter] = useState("all");
-
+  const [filters, setFilters] = useState(initialFilters);
   const [selectedPet, setSelectedPet] = useState(null);
 
+  const loadPets = async (currentFilters = filters, isFiltering = false) => {
+    if (isFiltering) {
+      setApplyingFilters(true);
+    } else {
+      setLoading(true);
+    }
+
+    setError("");
+
+    try {
+      const [myPetsRes, feedRes] = await Promise.all([
+        petsApi.listMine(),
+        petsApi.listFeed({
+          ...currentFilters,
+          page: 1,
+          limit: 30,
+          sort: "-createdAt",
+        }),
+      ]);
+
+      setMyPetId(myPetsRes.data[0]?._id || null);
+      setPets(feedRes.data);
+    } catch (err) {
+      setError(getApiError(err, "No se pudieron cargar las mascotas."));
+      setPets([]);
+    } finally {
+      setLoading(false);
+      setApplyingFilters(false);
+    }
+  };
+
   useEffect(() => {
-    const fetchData = async () => {
-      const token = sessionStorage.getItem("token");
-      try {
-        const myPetsRes = await axios.get(
-          `${import.meta.env.VITE_API_URL}/api/pets/my-pets`,
-          {
-            headers: {
-              Authorization: `Bearer ${token}`,
-              "Cache-Control": "no-cache",
-            },
-          },
-        );
-
-        if (myPetsRes.data.length > 0) {
-          setMyPetId(myPetsRes.data[0]._id);
-        }
-
-        const res = await axios.get(`${import.meta.env.VITE_API_URL}/api/pets`, {
-          headers: {
-            Authorization: `Bearer ${token}`,
-            "Cache-Control": "no-cache",
-          },
-        });
-
-        if (res.data.length === 0) setPets(DUMMY_PETS);
-        else setPets(res.data);
-      } catch (error) {
-        console.error("Error al obtener datos", error);
-        setPets(DUMMY_PETS);
-      } finally {
-        setLoading(false);
-      }
-    };
-    fetchData();
+    loadPets(initialFilters);
   }, []);
+
+  const handleFilterChange = (event) => {
+    const { name, value } = event.target;
+    setFilters((current) => ({ ...current, [name]: value }));
+  };
+
+  const handleApplyFilters = (event) => {
+    event.preventDefault();
+    loadPets(filters, true);
+  };
+
+  const handleClearFilters = () => {
+    setFilters(initialFilters);
+    loadPets(initialFilters, true);
+  };
 
   const handleSwipe = async (action, toPetId) => {
     if (!myPetId) {
-      alert(
-        "Primero debes crear el perfil de tu mascota antes de interactuar.",
-      );
+      setError("Primero debes crear el perfil de tu mascota antes de interactuar.");
       return;
     }
 
-    const token = sessionStorage.getItem("token");
-
     try {
-      if (toPetId === "1") {
-        setMessage(`Le diste ${action} a Luna 🐾`);
-        setPets(pets.filter((p) => p._id !== toPetId));
-        setTimeout(() => setMessage(""), 2000);
-        return;
-      }
+      const res = await matchesApi.swipe({
+        fromPetId: myPetId,
+        toPetId,
+        action,
+      });
 
-      const res = await axios.post(
-        `${import.meta.env.VITE_API_URL}/api/matches/swipe`,
-        {
-          fromPetId: myPetId,
-          toPetId: toPetId,
-          action: action,
-        },
-        { headers: { Authorization: `Bearer ${token}` } },
-      );
-      //animacion para el match
       if (res.data.isMatch) {
         setMatchPopup(res.data.matchData);
       } else {
-        setMessage(`Le diste ${action} a la mascota 🐾`);
+        setMessage(`Le diste ${action} a la mascota`);
       }
 
-      setPets(pets.filter((p) => p._id !== toPetId));
+      setPets((currentPets) => currentPets.filter((pet) => pet._id !== toPetId));
       setTimeout(() => setMessage(""), 2000);
-    } catch (error) {
-      if (error.response?.data?.error === "Ya deslizaste sobre esta mascota") {
-        setPets(pets.filter((p) => p._id !== toPetId));
+    } catch (err) {
+      const apiMessage = getApiError(err, "No se pudo procesar tu accion.");
+      if (apiMessage.includes("Ya deslizaste")) {
+        setPets((currentPets) => currentPets.filter((pet) => pet._id !== toPetId));
       } else {
-        console.error(error);
+        setError(apiMessage);
       }
     }
   };
 
-  const filteredPets = useMemo(() => {
-      return pets.filter((pet) => {
-        const matchesSearch = pet.name
-          .toLowerCase()
-          .includes(searchTerm.toLowerCase());
-        const matchesSpecies = speciesFilter === "all" || pet.species === speciesFilter;
-        return matchesSearch && matchesSpecies;
-      });
-    }, [pets, searchTerm, speciesFilter]);
-  
-    const speciesOptions = useMemo(() => {
-      const options = new Set(pets.map((pet) => pet.species).filter(Boolean));
-      return ["all", ...Array.from(options)];
-    }, [pets]);
-
-  if (loading)
+  if (loading) {
     return (
       <div className="text-center mt-20 text-brand-purple font-bold text-xl animate-pulse">
-        Buscando amiguitos... 🐾
+        Buscando mascotas...
       </div>
     );
+  }
 
   return (
     <div className="max-w-6xl mx-auto px-4 relative">
-      
       {selectedPet && (
         <ProfilePet
           pet={selectedPet}
@@ -155,12 +132,12 @@ const Explorar = () => {
           className="fixed inset-0 z-50 flex items-center justify-center bg-black/60 backdrop-blur-sm"
         >
           <div className="bg-white p-10 rounded-3xl text-center shadow-2xl flex flex-col items-center">
-            <h2 className="text-5xl mb-4">💖</h2>
+            <h2 className="text-5xl mb-4">Match</h2>
             <h1 className="text-4xl font-bold text-brand-purple mb-2">
-              ¡Es un Match!
+              Es un Match
             </h1>
             <p className="text-gray-600 mb-8">
-              Tú y otra mascota se gustan. ¡Es hora de chatear!
+              Tu mascota y otra mascota se gustan. Ya pueden chatear.
             </p>
             <button
               onClick={() => setMatchPopup(null)}
@@ -173,53 +150,102 @@ const Explorar = () => {
       )}
 
       <div className="text-center mb-8">
-        <h1 className="text-4xl font-bold text-gray-800">
-          Mascotas Destacadas
-        </h1>
-        <div className="flex flex-col sm:flex-row justify-center items-center gap-4 mt-6">
+        <h1 className="text-4xl font-bold text-gray-800">Mascotas Destacadas</h1>
+
+        <form
+          onSubmit={handleApplyFilters}
+          className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-6 gap-3 mt-6 text-left"
+        >
           <input
             type="text"
-            value={searchTerm}
-            onChange={(e) => setSearchTerm(e.target.value)}
+            name="search"
+            value={filters.search}
+            onChange={handleFilterChange}
             placeholder="Buscar por nombre"
-            className="px-4 py-2 border border-gray-200 rounded-full w-full sm:w-64 shadow-sm outline-none focus:border-brand-purple transition-all"
+            className="lg:col-span-2 px-4 py-2 border border-gray-200 rounded-xl shadow-sm outline-none focus:border-brand-purple transition-all"
           />
+
           <select
-            value={speciesFilter}
-            onChange={(e) => setSpeciesFilter(e.target.value)}
-            className="px-4 py-2 border border-gray-200 rounded-full shadow-sm outline-none bg-white focus:border-brand-purple transition-all cursor-pointer"
+            name="type"
+            value={filters.type}
+            onChange={handleFilterChange}
+            className="px-4 py-2 border border-gray-200 rounded-xl shadow-sm outline-none bg-white focus:border-brand-purple transition-all"
           >
-            {speciesOptions.map((option) => (
-              <option key={option} value={option}>
-                {option === "all" ? "Todas" : option}
-              </option>
-            ))}
+            <option value="">Tipo</option>
+            <option value="perro">Perro</option>
+            <option value="gato">Gato</option>
+            <option value="otro">Otro</option>
           </select>
-        </div>
-        <div className="h-6 mt-4">
-          {message && (
-            <p className="text-brand-pink font-bold animate-bounce">
-              {message}
-            </p>
-          )}
+
+          <select
+            name="lookingFor"
+            value={filters.lookingFor}
+            onChange={handleFilterChange}
+            className="px-4 py-2 border border-gray-200 rounded-xl shadow-sm outline-none bg-white focus:border-brand-purple transition-all"
+          >
+            <option value="">Busca</option>
+            <option value="amistad">Amistad</option>
+            <option value="pareja">Pareja</option>
+            <option value="paseos">Paseos</option>
+          </select>
+
+          <input
+            type="number"
+            min="0"
+            name="minAge"
+            value={filters.minAge}
+            onChange={handleFilterChange}
+            placeholder="Edad min."
+            className="px-4 py-2 border border-gray-200 rounded-xl shadow-sm outline-none focus:border-brand-purple transition-all"
+          />
+
+          <input
+            type="number"
+            min="0"
+            name="maxAge"
+            value={filters.maxAge}
+            onChange={handleFilterChange}
+            placeholder="Edad max."
+            className="px-4 py-2 border border-gray-200 rounded-xl shadow-sm outline-none focus:border-brand-purple transition-all"
+          />
+
+          <div className="sm:col-span-2 lg:col-span-6 flex flex-wrap justify-center gap-3">
+            <button
+              type="submit"
+              disabled={applyingFilters}
+              className="bg-gradient-brand px-6 py-2 rounded-full font-bold disabled:opacity-60"
+            >
+              {applyingFilters ? "Filtrando..." : "Aplicar filtros"}
+            </button>
+            <button
+              type="button"
+              onClick={handleClearFilters}
+              className="bg-white border border-gray-200 text-gray-700 px-6 py-2 rounded-full font-bold hover:border-brand-purple"
+            >
+              Limpiar
+            </button>
+          </div>
+        </form>
+
+        <div className="min-h-6 mt-4">
+          {message && <p className="text-brand-pink font-bold">{message}</p>}
+          {error && <p className="text-red-600 font-semibold">{error}</p>}
         </div>
       </div>
 
       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-8 place-items-center">
         <AnimatePresence>
-          {filteredPets.length === 0 ? (
-            <p className="text-gray-500 text-2xl col-span-1 sm:col-span-2 lg:col-span-3 text-center">
-              No hay más mascotas cerca por ahora.
-              <br/>
-              <span className="text-brand-pink font-bold text-5xl animate-bounce">¡Vuelve pronto!</span>
-            </p>
+          {pets.length === 0 ? (
+            <div className="bg-white rounded-3xl shadow-soft p-8 text-gray-500 text-xl col-span-1 sm:col-span-2 lg:col-span-3 text-center w-full">
+              No hay mascotas que coincidan con tu busqueda.
+            </div>
           ) : (
-            filteredPets.map((pet) => (
+            pets.map((pet) => (
               <PetCard
                 key={pet._id}
                 pet={pet}
                 onSwipe={(action) => handleSwipe(action, pet._id)}
-                onViewProfile={(pet) => setSelectedPet(pet)}
+                onViewProfile={(petToView) => setSelectedPet(petToView)}
               />
             ))
           )}
